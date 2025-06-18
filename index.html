@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ChatGPT Voice Bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 40px;
+      }
+      button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+      #response {
+        margin-top: 20px;
+        font-size: 1.1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎙️ ChatGPT Voice Bot</h1>
+    <button onclick="startListening()">🎤 Speak</button>
+    <div id="response"></div>
+
+    <script>
+      const responseDiv = document.getElementById("response");
+
+      function startListening() {
+        const recognition = new (window.SpeechRecognition ||
+          window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onresult = async function (event) {
+          const transcript = event.results[0][0].transcript;
+          responseDiv.innerHTML = `<b>You said:</b> ${transcript}<br>Loading response...`;
+
+          const res = await fetch(
+            "https://chatgpt-voice-bot--gaikwadswaraj12.repl.co/chat",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: transcript }),
+            },
+          );
+
+          const data = await res.json();
+          responseDiv.innerHTML = `<b>You said:</b> ${transcript}<br><b>Bot:</b> ${data.reply}`;
+
+          const utterance = new SpeechSynthesisUtterance(data.reply);
+          speechSynthesis.speak(utterance);
+        };
+
+        recognition.onerror = function (event) {
+          responseDiv.innerHTML = "Error: " + event.error;
+        };
+      }
+    </script>
+  </body>
+</html>
