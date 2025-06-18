@@ -1,41 +1,40 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const { OpenAI } = require('openai');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const { OpenAI } = require("openai");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve index.html and other files
+app.use(express.static(path.join(__dirname)));
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Set this in Railway environment variables
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-app.post('/chat', async (req, res) => {
-  try {
-    const userMessage = req.body.message;
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
+app.post("/chat", async (req, res) => {
+  const { message } = req.body;
+  try {
     const chatCompletion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [{ role: 'user', content: userMessage }],
+      model: "gpt-4",
+      messages: [{ role: "user", content: message }]
     });
 
-    const botReply = chatCompletion.choices[0].message.content;
-    res.json({ reply: botReply });
+    const reply = chatCompletion.choices[0].message.content;
+    res.json({ reply });
   } catch (error) {
-    console.error('OpenAI error:', error.message);
-    res.status(500).json({ error: 'Something went wrong.' });
+    console.error("Error communicating with OpenAI:", error);
+    res.status(500).json({ error: "Failed to generate response" });
   }
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`✅ Server running on port ${port}`);
 });
 

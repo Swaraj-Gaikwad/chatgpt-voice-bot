@@ -1,11 +1,14 @@
 {
   "name": "chatgpt-voice-bot",
   "version": "1.0.0",
-  "description": "ChatGPT voice bot web app",
+  "description": "Voice bot using ChatGPT",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -15,4 +18,5 @@
     "openai": "^4.14.1"
   }
 }
+
 
