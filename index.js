@@ -1,36 +1,52 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
+const bodyParser = require("body-parser");
 const { OpenAI } = require("openai");
+require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; 
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname)));
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+app.use(bodyParser.json());
+app.use(express.static("public")); 
 
 app.post("/chat", async (req, res) => {
-  const { message } = req.body;
+  const userMessage = req.body.message;
+
+  const messages = [
+    {
+      role: "system",
+      content: `You are Swaraj Gaikwad, an aspiring software engineer passionate about AI and building smart tools.
+You're friendly, reflective, and concise in your answers. You love pushing limits, learning deeply, and being helpful.
+Answer as Swaraj would—based on your real thoughts, values, and goals.
+Your background:
+- B.Tech in IT from D.Y. Patil College (CGPA 9.45)
+- Skilled in Python, C++, Java, SQL, ML, Linux
+- Built projects like QuickSummarize (text summarizer), EduPredict (exam score predictor), and more
+- Interned at Outlier AI and AI Chef Master
+- Applying for a graduate software engineer role
+Be natural, humble, yet confident in your replies.`
+    },
+    {
+      role: "user",
+      content: userMessage
+    }
+  ];
+
   try {
-    const chatCompletion = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [{ role: "user", content: message }]
+      messages
     });
 
-    const reply = chatCompletion.choices[0].message.content;
-    res.json({ reply });
+    const botReply = response.choices[0].message.content;
+    res.json({ reply: botReply });
   } catch (error) {
-    console.error("Error communicating with OpenAI:", error);
-    res.status(500).json({ error: "Failed to generate response" });
+    console.error("OpenAI API error:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 

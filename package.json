@@ -1,22 +1,27 @@
 {
   "name": "chatgpt-voice-bot",
   "version": "1.0.0",
-  "description": "Voice bot using ChatGPT",
+  "description": "A voice bot using OpenAI API",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "engines": {
     "node": ">=18.0.0"
   },
+  "keywords": [],
+  "author": "Swaraj Gaikwad",
+  "license": "ISC",
   "dependencies": {
+    "@types/node": "^22.13.11",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.2",
     "express": "^5.1.0",
     "openai": "^4.14.1"
   }
 }
+
 
 
